@@ -56,14 +56,11 @@ jobs:
          getToken
 
          signIn
-      - name: test
-        run: |
-          ls
+      - name: Get coin number
+        id: coin
+        run: echo "$(cat info.json | grep -o '"coin":[^,]*' | cut -d':' -f2)"
       - name: Send Dingtalk
-        
-        uses: ghostoy/dingtalk-action@master
         with:
-          webhook: ${{ secrets.DINGTALK_WEBHOOK}}
           msgtype: markdown
           run: |
             curl -H 'Content-Type: application/json' \
