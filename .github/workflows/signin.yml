@@ -56,13 +56,13 @@ jobs:
          getToken
 
          signIn
+         
       - name: Get coin number
         id: coin
         run: echo "$(cat info.json | grep -o '"coin":[^,]*' | cut -d':' -f2)"
+        
       - name: Send Dingtalk
-        with:
-          msgtype: markdown
-          run: |
+        run: |
             curl -H 'Content-Type: application/json' \
             -d '{"msgtype": "text", "text": {"content": "今日银币数：'"${{ steps.coin.outputs.value }}"'"}}' \
             ${{ secrets.DINGTALK_WEBHOOK }}
