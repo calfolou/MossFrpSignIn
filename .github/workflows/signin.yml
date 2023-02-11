@@ -47,8 +47,7 @@ jobs:
          }
          
          SetMessage(){
-         coin=$(cat info.json | grep -oP '(?<="coin":)[0-9]+')
-         echo $coin
+         echo "::set-env name=COIN::$(jq -r '.coin' info.json)"
          }
          echo ""
          echo "+----------------------------------------------------------------------
@@ -71,7 +70,7 @@ jobs:
           content: |
            {
              "title": "MossFrp 签到成功通知",
-             "text": "MossFrp 签到成功，${{ env.coin }}"
+             "text": "MossFrp 签到成功，${{ env.COIN }}"
            }
           at: |
            {
