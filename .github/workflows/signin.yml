@@ -42,10 +42,14 @@ jobs:
          signIn(){
          echo "[+] Checking in..."
          echo ""
-         curl -i -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36' -X POST -H "'Content-type':'application/json'" http://public.ghs.wiki:7001/API\?type\=signIn\&token\=$token
+         curl -i -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36' -X POST -H "'Content-type':'application/json'" http://public.ghs.wiki:7001/API\?type\=signIn\&token\=$token > info.json
          echo ""
          }
          
+         SetMessage(){
+         coin=$(cat info.json | grep -oP '(?<="coin":)[0-9]+')
+         echo $coin
+         }
          echo ""
          echo "+----------------------------------------------------------------------
          | MOSSFRP Auto SignIn
@@ -65,7 +69,7 @@ jobs:
           content: |
            {
              "title": "MossFrp 签到成功通知",
-             "text": "MossFrp 签到成功，"
+             "text": "MossFrp 签到成功，$coin"
            }
           at: |
            {
