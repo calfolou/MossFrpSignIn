@@ -44,7 +44,7 @@ jobs:
          echo ""
          curl -i -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36' -X POST -H "'Content-type':'application/json'" http://public.ghs.wiki:7001/API\?type\=signIn\&token\=$token > info.json
          echo ""
-         echo "::set-output name=value::$(jq -r '.coin' "info.json")"
+         echo "$(cat info.json | grep -o '"coin":[^,]*' | cut -d':' -f2)"
          }
          echo ""
          echo "+----------------------------------------------------------------------
@@ -56,20 +56,16 @@ jobs:
          getToken
 
          signIn
-         
+      - name: test
+        run: |
+          ls
       - name: Send Dingtalk
         
         uses: ghostoy/dingtalk-action@master
         with:
           webhook: ${{ secrets.DINGTALK_WEBHOOK}}
           msgtype: markdown
-          content: |
-           {
-             "title": "MossFrp 签到成功通知",
-             "text": "MossFrp 签到成功 ${{ steps.coin.outputs.value }}"
-           }
-          at: |
-           {
-              "atMobiles": [
-              "18118193625"
-           ]}
+          run: |
+            curl -H 'Content-Type: application/json' \
+            -d '{"msgtype": "text", "text": {"content": "今日银币数：'"${{ steps.coin.outputs.value }}"'"}}' \
+            ${{ secrets.DINGTALK_WEBHOOK }}
