@@ -44,8 +44,7 @@ jobs:
          echo "$(cat info.json | grep -o '"coin":[^,]*' | cut -d':' -f2)"
          
       - name: GetMessage
-        run: |
-         coin=$(cat info.json | grep -o '"coin":[^,]*' | cut -d':' -f2)
+        run: coin=$(cat info.json | grep -o '"coin":[^,]*' | cut -d':' -f2)
         
       - name: Send Dingtalk
         run: |
