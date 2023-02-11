@@ -15,7 +15,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  sign-in:
+  SignIn:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -32,22 +32,27 @@ jobs:
          curl -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36' -X POST -H "'Content-type':'application/json'"  http://public.ghs.wiki:7001/API\?type\=login\&loginType\=email\&account\=${{ secrets.EMAIL }}\&password\=${{ secrets.PASSWORD }} > getToken.info
          echo ""
          sleep 3
+      - name: GetToken
+        run: |
          echo "[+] Saving Token..."
          cut -c 26-61 getToken.info > token.info
          sleep 3
       - name: SignIn
         run: |
+         echo "[+] Checking Token..."
          token=$(cat token.info)
-         echo "[+] Checking in..."
+         echo "[+] Start SignIn"
          echo ""
          curl -i -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36' -X POST -H "'Content-type':'application/json'" http://public.ghs.wiki:7001/API\?type\=signIn\&token\=$token > info.json
          echo ""
-      - name: Send Dingtalk
+         sleep 3
+      - name: Send to Dingtalk
         run: |
-            coin=$(cat info.json | grep -o '"coin":[^,]*' | cut -d':' -f2)
-            luck=$(cat info.json | grep -o '"luck":[^,]*' | cut -d':' -f2)
-            luckmessage=$(cat info.json | grep -o '"luckMessage":[^,]*' | cut -d'"' -f4)
-            signinmessage=$(cat info.json | grep -o '"signInMessage":[^,]*' | cut -d'"' -f4)
-            curl -H 'Content-Type: application/json' \
-            -d '{"msgtype": "markdown", "markdown": {"title": "MossFrp 自动签到 银币：'"$coin"' 人品：'"$luck"'","text": "## **MossFrp 自动签到**  \n  你今日的人品值为：'"$luck"''"$luckmessage"''"$signinmessage"'"}}' \
-            ${{ secrets.DINGTALK_WEBHOOK }}
+          echo "[+] Sending Message"
+          coin=$(cat info.json | grep -o '"coin":[^,]*' | cut -d':' -f2)
+          luck=$(cat info.json | grep -o '"luck":[^,]*' | cut -d':' -f2)
+          luckmessage=$(cat info.json | grep -o '"luckMessage":[^,]*' | cut -d'"' -f4)
+          signinmessage=$(cat info.json | grep -o '"signInMessage":[^,]*' | cut -d'"' -f4)
+          curl -H 'Content-Type: application/json' \
+          -d '{"msgtype": "markdown", "markdown": {"title": "MossFrp 自动签到 银币：'"$coin"' 人品：'"$luck"'","text": "## **MossFrp 自动签到**  \n  你今日的人品值为：'"$luck"''"$luckmessage"''"$signinmessage"'"}}' \
+          ${{ secrets.DINGTALK_WEBHOOK }}
