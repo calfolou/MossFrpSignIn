@@ -8,7 +8,7 @@ on:
   push:
     branches: [ "main" ]
   schedule:
-    - cron: '0 5 * * *' 
+    - cron: '0 21 * * *' 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -25,9 +25,8 @@ jobs:
       - uses: actions/checkout@v3
 
       # Runs a set of commands using the runners shell
-      - name: SignIn
+      - name: GetToken
         run: |
-         getToken() {
          echo "[↓] Requesting WebAPI..."
          echo ""
          curl -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36' -X POST -H "'Content-type':'application/json'"  http://public.ghs.wiki:7001/API\?type\=login\&loginType\=email\&account\=${{ secrets.EMAIL }}\&password\=${{ secrets.PASSWORD }} > getToken.info
@@ -35,28 +34,16 @@ jobs:
          sleep 3
          echo "[+] Saving Token..."
          cut -c 26-61 getToken.info > token.info
+         sleep 3
+      - name: SignIn
+        run: |
          token=$(cat token.info)
-           sleep 3
-         }
-         
-         signIn(){
          echo "[+] Checking in..."
          echo ""
          curl -i -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36' -X POST -H "'Content-type':'application/json'" http://public.ghs.wiki:7001/API\?type\=signIn\&token\=$token > info.json
          echo ""
-         }
-         echo ""
-         echo "+----------------------------------------------------------------------
-         | MOSSFRP Auto SignIn
-         +----------------------------------------------------------------------
-         | Script by NekoYyang
-         +----------------------------------------------------------------------"
-         echo ""
-         getToken
-         signIn
       - name: Send Dingtalk
         run: |
-            ls
             coin=$(cat info.json | grep -o '"coin":[^,]*' | cut -d':' -f2)
             luck=$(cat info.json | grep -o '"luck":[^,]*' | cut -d':' -f2)
             luckmessage=$(cat info.json | grep -o '"luckMessage":[^,]*' | cut -d'"' -f4)
