@@ -60,5 +60,5 @@ jobs:
             coin=$(cat info.json | grep -o '"coin":[^,]*' | cut -d':' -f2)
             luck=$(cat info.json | grep -o '"luck":[^,]*' | cut -d':' -f2)
             curl -H 'Content-Type: application/json' \
-            -d '{"msgtype": "markdown", "text": {"content": "签到测试通知\n - 今日银币数：'"$coin"'\n今日人品数：'"$luck"'"}}' \
+            -d '{"msgtype": "markdown", "markdown": {"title": "签到测试通知","text": "签到测试通知\n - 今日银币数：'"$coin"'\n - 今日人品数：'"$luck"'"}}' \
             ${{ secrets.DINGTALK_WEBHOOK }}
