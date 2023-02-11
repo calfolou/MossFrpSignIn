@@ -44,11 +44,9 @@ jobs:
          echo ""
          curl -i -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36' -X POST -H "'Content-type':'application/json'" http://public.ghs.wiki:7001/API\?type\=signIn\&token\=$token > info.json
          echo ""
-         }
-         
-         SetMessage(){
          echo "::set-env name=COIN::$(jq -r '.coin' info.json)"
          }
+         
          echo ""
          echo "+----------------------------------------------------------------------
          | MOSSFRP Auto SignIn
@@ -59,8 +57,6 @@ jobs:
          getToken
 
          signIn
-         
-         SetMessage
          
       - name: Send Dingtalk
         uses: ghostoy/dingtalk-action@master
