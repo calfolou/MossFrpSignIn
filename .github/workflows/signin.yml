@@ -45,6 +45,7 @@ jobs:
          curl -i -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36' -X POST -H "'Content-type':'application/json'" http://public.ghs.wiki:7001/API\?type\=signIn\&token\=$token > info.json
          echo ""
          coin=$(cat info.json | grep -o '"coin":[^,]*' | cut -d':' -f2)
+         echo $coin
          }
          echo ""
          echo "+----------------------------------------------------------------------
@@ -55,13 +56,10 @@ jobs:
          echo ""
          getToken
          signIn
-         
-      - name: Get coin number
-        id: coin
-        run: coin=$(cat info.json | grep -o '"coin":[^,]*' | cut -d':' -f2)
-        
       - name: Send Dingtalk
         run: |
+            ls
+            echo $coin
             curl -H 'Content-Type: application/json' \
             -d '{"msgtype": "text", "text": {"content": "签到测试通知\n今日银币数：'"$coin"'"}}' \
             ${{ secrets.DINGTALK_WEBHOOK }}
