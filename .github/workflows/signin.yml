@@ -64,5 +64,5 @@ jobs:
       - name: Send Dingtalk
         run: |
             curl -H 'Content-Type: application/json' \
-            -d '{"msgtype": "text", "text": {"content": "今日银币数：'"${{ steps.coin.outputs.value }}"'"}}' \
+            -d '{"msgtype": "text", "text": {"content": "签到测试通知\n今日银币数：'"${{ steps.coin.outputs.value }}"'"}}' \
             ${{ secrets.DINGTALK_WEBHOOK }}
