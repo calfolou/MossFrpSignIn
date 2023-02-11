@@ -61,6 +61,8 @@ jobs:
 
          signIn
          
+         SetMessage
+         
       - name: Send Dingtalk
         uses: ghostoy/dingtalk-action@master
         with:
