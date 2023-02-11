@@ -59,6 +59,8 @@ jobs:
             ls
             coin=$(cat info.json | grep -o '"coin":[^,]*' | cut -d':' -f2)
             luck=$(cat info.json | grep -o '"luck":[^,]*' | cut -d':' -f2)
+            luckmessage=$(cat info.json | grep -o '"luckMessage":[^,]*' | cut -d'"' -f4)
+            signinmessage=$(cat info.json | grep -o '"signInMessage":[^,]*' | cut -d'"' -f4)
             curl -H 'Content-Type: application/json' \
-            -d '{"msgtype": "markdown", "markdown": {"title": "MossFrp 签到 银币：'"$coin"' 人品：'"$luck"'","text": "**MossFrp 签到通知** \n '"$message"'\n - 银币数：'"$coin"'\n - 人品值：'"$luck"'"}}' \
+            -d '{"msgtype": "markdown", "markdown": {"title": "MossFrp 自动签到 银币：'"$coin"' 人品：'"$luck"'","text": "## **MossFrp 自动签到**  \n  你今日的人品值为：'"$luck"''"$luckmessage"''"$signinmessage"'"}}' \
             ${{ secrets.DINGTALK_WEBHOOK }}
