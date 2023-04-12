@@ -35,7 +35,7 @@ jobs:
       - name: SaveToken
         run: |
          echo "[+] Saving Token..."
-         cut -c 26-61 getToken.info > token.info
+         cut -c 35-70 getToken.info > token.info
          sleep 3
       - name: SignIn
         run: |
