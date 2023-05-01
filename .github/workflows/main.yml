@@ -25,7 +25,14 @@ jobs:
      - uses: actions/checkout@v3
      - name: Get Token
        run: |
-         curl -s -X POST -H "Content-Type: application/json" "https://https.ghs.wiki:7002/API?type=login&loginType=email&account=${{ secrets.EMAIL }}&password=${{ secrets.PASSWORD }}" | awk -F'"' '{print $10}' > token.info
+        TOKEN=$(curl -s -X POST -H "Content-Type: application/json" "https://https.ghs.wiki:7002/API?type=login&loginType=email&account=${{ secrets.EMAIL }}&password=${{ secrets.PASSWORD }}" | awk -F'"' '/"status": "200"/{print $10}')
+        if [[ -z $TOKEN ]]; then
+          echo "404: Account or Password incorrect"
+          exit 1
+        fi
+        echo $TOKEN > token.info
+        echo ""
+        sleep 3
      - name: Sign In
        run: |
          token=$(cat token.info)
