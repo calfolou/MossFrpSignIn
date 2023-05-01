@@ -37,4 +37,4 @@ jobs:
          luck=$(jq -r '.luck' info.json)
          luck_message=$(jq -r '.luckMessage' info.json)
          sign_in_message=$(jq -r '.signInMessage' info.json)
-         curl -s -H "Content-Type: application/json" -d "{\"msgtype\": \"markdown\", \"markdown\": {\"title\": \"MossFrp 自动签到 银币：$coin 人品：$luck\", \"text\": \"## **MossFrp 自动签到**\n你今日的人品值为：$luck$luck_message$sign_in_message\"}}" ${{ secrets.DINGTALK_WEBHOOK }}
+         curl -s -H "Content-Type: application/json" -d "{\"msgtype\": \"markdown\", \"markdown\": {\"title\": \"MossFrp 自动签到 银币：$coin 人品：$luck\", \"text\": \"## **MossFrp 自动签到**\n你今日的人品值为：$luck$luck_message$sign_in_message\"}}" ${{ secrets.WEBHOOK }}
