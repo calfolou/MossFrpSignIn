@@ -21,38 +21,18 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
-      # Runs a set of commands using the runners shell
-      - name: GetToken
-        run: |
-         echo "[↓] Requesting WebAPI..."
-         echo ""
-         curl -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36' -X POST -H "'Content-type':'application/json'"  https://https.ghs.wiki:7002/API\?type\=login\&loginType\=email\&account\=${{ secrets.EMAIL }}\&password\=${{ secrets.PASSWORD }} > getToken.info
-         echo ""
-         sleep 3
-      - name: SaveToken
-        run: |
-         echo "[+] Saving Token..."
-         cut -c 35-70 getToken.info > token.info
-         sleep 3
-      - name: SignIn
-        run: |
-         echo "[+] Checking Token..."
+     - uses: actions/checkout@v3
+     - name: Get Token
+       run: |
+         curl -s -X POST -H "Content-Type: application/json" "https://https.ghs.wiki:7002/API?type=login&loginType=email&account=${{ secrets.EMAIL }}&password=${{ secrets.PASSWORD }}" | awk -F'"' '{print $10}' > token.info
+     - name: Sign In
+       run: |
          token=$(cat token.info)
-         echo "[+] Start SignIn"
-         echo ""
-         curl -i -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36' -X POST -H "'Content-type':'application/json'" https://https.ghs.wiki:7002/API\?type\=signIn\&token\=$token > info.json
-         echo ""
-         sleep 3
-      - name: Send to Dingtalk
-        run: |
-          echo "[+] Sending Message"
-          coin=$(cat info.json | grep -o '"coin":[^,]*' | cut -d':' -f2)
-          luck=$(cat info.json | grep -o '"luck":[^,]*' | cut -d':' -f2)
-          luckmessage=$(cat info.json | grep -o '"luckMessage":[^,]*' | cut -d'"' -f4)
-          signinmessage=$(cat info.json | grep -o '"signInMessage":[^,]*' | cut -d'"' -f4)
-          curl -H 'Content-Type: application/json' \
-          -d '{"msgtype": "markdown", "markdown": {"title": "MossFrp 自动签到 银币：'"$coin"' 人品：'"$luck"'","text": "## **MossFrp 自动签到**  \n  你今日的人品值为：'"$luck"''"$luckmessage"''"$signinmessage"'"}}' \
-          ${{ secrets.DINGTALK_WEBHOOK }}
+         curl -s -X POST -H "Content-Type: application/json" "https://https.ghs.wiki:7002/API?type=signIn&token=$token" > info.json
+     - name: Send to DingTalk
+       run: |
+         coin=$(jq -r '.coin' info.json)
+         luck=$(jq -r '.luck' info.json)
+         luck_message=$(jq -r '.luckMessage' info.json)
+         sign_in_message=$(jq -r '.signInMessage' info.json)
+         curl -s -H "Content-Type: application/json" -d "{\"msgtype\": \"markdown\", \"markdown\": {\"title\": \"MossFrp 自动签到 银币：$coin 人品：$luck\", \"text\": \"## **MossFrp 自动签到**\n你今日的人品值为：$luck$luck_message$sign_in_message\"}}" ${{ secrets.DINGTALK_WEBHOOK }}
