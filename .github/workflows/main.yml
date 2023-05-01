@@ -18,7 +18,8 @@ jobs:
   SignIn:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
+    env:
+      WEBHOOK: ${{ secrets.WEBHOOK }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
      - uses: actions/checkout@v3
@@ -30,7 +31,7 @@ jobs:
          token=$(cat token.info)
          curl -s -X POST -H "Content-Type: application/json" "https://https.ghs.wiki:7002/API?type=signIn&token=$token" > info.json
      - name: Send to DingTalk
-       if: secrets.WEBHOOK
+       if: env.WEBHOOK
        run: |
          coin=$(jq -r '.coin' info.json)
          luck=$(jq -r '.luck' info.json)
