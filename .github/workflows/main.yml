@@ -30,6 +30,7 @@ jobs:
          token=$(cat token.info)
          curl -s -X POST -H "Content-Type: application/json" "https://https.ghs.wiki:7002/API?type=signIn&token=$token" > info.json
      - name: Send to DingTalk
+       if: secrets.WEBHOOK
        run: |
          coin=$(jq -r '.coin' info.json)
          luck=$(jq -r '.luck' info.json)
